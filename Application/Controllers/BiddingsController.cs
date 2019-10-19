@@ -21,31 +21,30 @@ namespace Application.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
-    public class BiddingsController : ControllerBase
+    public class PaymentsController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IBidRepository _bidRepository;
-        private readonly IBidService _bidService;
+        private readonly IPaymentRepository _paymentRepository;
+        private readonly IPaymentservice _paymentservice;
 
-        public BiddingsController(IBidService bidService, IBidRepository bidRepository, IMapper mapper)
+        public PaymentsController(IPaymentservice paymentservice, IPaymentRepository paymentRepository, IMapper mapper)
         {
-            _bidService = bidService;
-            _bidRepository = bidRepository;
+            _paymentservice = paymentservice;
+            _paymentRepository = paymentRepository;
             _mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<IActionResult> OpenBid([FromBody] BidCreationDto bidDto)
+        public async Task<IActionResult> OpenPayment([FromBody] PaymentCreationDto paymentDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new
-                    {message = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)});
+                return BadRequest(new { message = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
 
-            var createBid = _mapper.Map<Bid>(bidDto);
+            var createPayment = _mapper.Map<Payment>(paymentDto);
             try
             {
-                var createdBid = await _bidService.Open(createBid);
-                return Ok(createdBid);
+                var createdPayment = await _paymentservice.Open(createPayment);
+                return Ok(createdPayment);
             }
             catch (UserNotFound)
             {
@@ -61,22 +60,21 @@ namespace Application.Controllers
             }
         }
 
-        [HttpPut("{bidId}")]
-        public async Task<IActionResult> AcceptBid([FromHeader] string authorization, [FromRoute] string bidId, [FromBody] BidUpdateDto bidDto)
+        [HttpPut("{paymentId}")]
+        public async Task<IActionResult> AcceptPayment([FromHeader] string authorization, [FromRoute] string paymentId, [FromBody] PaymentUpdateDto paymentDto)
         {
-            if (bidId != bidDto.Id)
+            if (paymentId != paymentDto.Id)
                 return BadRequest(new MessageObj("Invalid id(s)"));
 
             if (!ModelState.IsValid)
-                return BadRequest(new
-                    {message = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)});
+                return BadRequest(new { message = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
 
-            var updateBid = _mapper.Map<Bid>(bidDto);
+            var updatePayment = _mapper.Map<Payment>(paymentDto);
             try
             {
-                if (await _bidService.Accept(updateBid, authorization.Split(' ')[1]))
+                if (await _paymentservice.Accept(updatePayment, authorization.Split(' ') [1]))
                     return Ok();
-                throw new InvalidBid();
+                throw new InvalidPayment();
             }
             catch (Exception e)
             {
@@ -88,28 +86,27 @@ namespace Application.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
-            var bids = await _bidRepository.Get();
-            var bidDtos = _mapper.Map<IList<BidDto>>(bids);
-            return Ok(bidDtos);
+            var payments = await _paymentRepository.Get();
+            var paymentDtos = _mapper.Map<IList<PaymentDto>>(payments);
+            return Ok(paymentDtos);
         }
-
 
         [HttpGet("freelancer/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetByFreelancerId(string id)
         {
-            var bids = await _bidRepository.GetByFreelancerId(id);
-            var bidsDto = _mapper.Map<BidDto>(bids);
-            return Ok(bidsDto);
+            var payments = await _paymentRepository.GetByFreelancerId(id);
+            var paymentsDto = _mapper.Map<PaymentDto>(payments);
+            return Ok(paymentsDto);
         }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetById(string id)
         {
-            var bid = await _bidRepository.GetById(id);
-            var bidDto = _mapper.Map<BidDto>(bid);
-            return Ok(bidDto);
+            var payment = await _paymentRepository.GetById(id);
+            var paymentDto = _mapper.Map<PaymentDto>(payment);
+            return Ok(paymentDto);
         }
 
         [HttpDelete("{id}")]
@@ -117,7 +114,7 @@ namespace Application.Controllers
         {
             try
             {
-                await _bidRepository.Remove(id);
+                await _paymentRepository.Remove(id);
             }
             catch (Exception e)
             {

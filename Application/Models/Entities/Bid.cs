@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Application.Models.Entities
 {
-    public class Bid
+    public class Payment
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

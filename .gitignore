@@ -235,7 +235,7 @@ orleans.codegen.cs
 # ASP.NET Core default setup: bower directory is configured as wwwroot/lib/ and bower restore is true
 **/wwwroot/lib/
 
-# RIA/Silverlight biddings
+# RIA/Silverlight payments
 Generated_Code/
 
 # Backup & report files from converting an old project file
@@ -253,7 +253,7 @@ ServiceFabricBackup/
 *.ldf
 *.ndf
 
-# Business Intelligence biddings
+# Business Intelligence payments
 *.rdl.data
 *.bim.layout
 *.bim_*.settings

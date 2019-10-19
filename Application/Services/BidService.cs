@@ -15,39 +15,40 @@ using Newtonsoft.Json;
 
 namespace Application.Services
 {
-    public interface IBidService
+    public interface IPaymentservice
     {
-        Task<Bid> Open(Bid bid);
-        Task<bool> Accept(Bid bid, string authorizationToken);
+        Task<Payment> Open(Payment payment);
+        Task<bool> Accept(Payment payment, string authorizationToken);
     }
 
-    public class BidService : IBidService
+    public class Paymentservice : IPaymentservice
     {
-        private readonly IBidRepository _bidRepository;
+        private readonly IPaymentRepository _paymentRepository;
         private readonly IClient _client;
 
-        public BidService(IBidRepository bidRepository, IClient client)
+        public Paymentservice(IPaymentRepository paymentRepository, IClient client)
         {
-            _bidRepository = bidRepository;
+            _paymentRepository = paymentRepository;
             _client = client;
         }
 
-        public async Task<Bid> Open(Bid bid)
+        public async Task<Payment> Open(Payment payment)
         {
-            var project = await _client.GetProjectAsync(bid.ProjectId);
-            if (project == null) throw new InvalidBid();
+            var project = await _client.GetProjectAsync(payment.ProjectId);
+            if (project == null) throw new InvalidPayment();
 
-            var createdBid = await _bidRepository.Create(bid);
+            var createdPayment = await _paymentRepository.Create(payment);
 
-            return createdBid ?? throw new InvalidBid();
+            return createdPayment ??
+                throw new InvalidPayment();
         }
 
-        public async Task<bool> Accept(Bid bid, string authorizationToken)
+        public async Task<bool> Accept(Payment payment, string authorizationToken)
         {
-            var project = await _client.GetProjectAsync(bid.ProjectId);
-            if (project == null) throw new InvalidBid("projectId invalid");
+            var project = await _client.GetProjectAsync(payment.ProjectId);
+            if (project == null) throw new InvalidPayment("projectId invalid");
 
-            project.FreelancerId = bid.FreelancerId;
+            project.FreelancerId = payment.FreelancerId;
 
             return await _client.UpdateProjectAsync(authorizationToken, project);
         }

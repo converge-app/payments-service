@@ -55,16 +55,16 @@ namespace Application
 
             var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
             services.AddTokenValidation(appSettings.Secret);
-            services.AddScoped<IBidRepository, BidRepository>();
-            services.AddScoped<IBidService, BidService>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IPaymentservice, Paymentservice>();
             services.AddTracing(options =>
             {
                 options.JaegerAgentHost = Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST");
-                options.ServiceName = "biddings-service";
+                options.ServiceName = "payments-service";
                 options.LoggerFactory = _loggerFactory;
             });
 
-            services.AddApiDocumentation("Biddings");
+            services.AddApiDocumentation("Payments");
 
             services.AddHealthChecks();
         }
@@ -84,7 +84,7 @@ namespace Application
             app.UseRequestMiddleware();
 
             app.UseAuthentication();
-            app.UseApiDocumentation("Biddings");
+            app.UseApiDocumentation("Payments");
 
             app.UseMvc();
         }

@@ -24,7 +24,7 @@ spec:
             - name: ELASTICSEARCH_URI
               value: jaeger-elasticsearch-client:9200
             - name: CollectionName
-              value: "Biddings"
+              value: "Payments"
             - name: ConnectionString
               value: "mongodb://{{ .Values.web.mongodb.serviceName }}:{{ .Values.web.mongodb.port }}"
             - name: DatabaseName

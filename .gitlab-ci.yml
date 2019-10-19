@@ -9,13 +9,13 @@ stages:
   - deploy
 
 variables:
-  IMAGE: ${CI_REGISTRY_IMAGE}/biddings-service:${CI_COMMIT_REF_SLUG}
+  IMAGE: ${CI_REGISTRY_IMAGE}/payments-service:${CI_COMMIT_REF_SLUG}
   GKE_SERVICE_ACCOUNT: base64-encoded-json-service-account-file-from-gke
   GKE_CLUSTER_NAME: converge-cluster
   GKE_ZONE: europe-west3-a
   GKE_PROJECT: converge-252922
-  URL_REVIEW: biddings-service.api.${CI_COMMIT_REF_SLUG}.converge-app.net
-  URL_PRODUCTION: biddings-service.api.converge-app.net
+  URL_REVIEW: payments-service.api.${CI_COMMIT_REF_SLUG}.converge-app.net
+  URL_PRODUCTION: payments-service.api.converge-app.net
   GIT_SUBMODULE_STRATEGY: recursive
 
 build:
@@ -38,12 +38,12 @@ deploy_review:
     - init_helm
     - helm upgrade
       --install
-      --set web.name="biddings-service-${CI_COMMIT_REF_SLUG}"
+      --set web.name="payments-service-${CI_COMMIT_REF_SLUG}"
       --set web.image="${IMAGE}"
       --set web.host="${URL_REVIEW}"
       --wait
       --force
-      biddings-service-${CI_COMMIT_REF_SLUG}
+      payments-service-${CI_COMMIT_REF_SLUG}
       ./k8s-chart
   except:
     refs:
@@ -56,12 +56,12 @@ deploy_production:
     - init_helm
     - helm upgrade
       --install
-      --set web.name="biddings-service-${CI_COMMIT_REF_SLUG}"
+      --set web.name="payments-service-${CI_COMMIT_REF_SLUG}"
       --set web.image="${IMAGE}"
       --set web.host="${URL_PRODUCTION}"
       --wait
       --force
-      biddings-service-${CI_COMMIT_REF_SLUG}
+      payments-service-${CI_COMMIT_REF_SLUG}
       ./k8s-chart
   only:
     refs:

@@ -1,7 +1,7 @@
 web:
   port: 80
   mongodb:
-    serviceName: "biddings-service-master-mongodb"
+    serviceName: "payments-service-master-mongodb"
     port: "27017"
 
 mongodb:
