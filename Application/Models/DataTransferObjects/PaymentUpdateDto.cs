@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.Models.DataTransferObjects
 {
-    public class PaymentDto
+    public class PaymentUpdateDto
     {
         [Required]
         public string Id { get; set; }
