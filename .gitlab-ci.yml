@@ -61,6 +61,7 @@ deploy_production:
       --set web.host="${URL_PRODUCTION}"
       --wait
       --force
+      --timeout 600
       payments-service-${CI_COMMIT_REF_SLUG}
       ./k8s-chart
   only:
