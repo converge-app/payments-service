@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Helpers;
@@ -36,7 +37,6 @@ namespace Application.Controllers
         }
 
         [HttpPost("deposit")]
-        [AllowAnonymous]
         public async Task<IActionResult> StartDeposit([FromBody] DepositCreationDto depositCreationDto)
         {
             if (!ModelState.IsValid)
@@ -54,7 +54,8 @@ namespace Application.Controllers
                     PaymentMethodTypes = new List<string>
                     {
                     "card"
-                    }
+                    },
+                    Metadata = new Dictionary<string, string>() { { "UserId", User.FindFirstValue(ClaimTypes.Name) } }
                 };
                 var intent = service.Create(options);
 

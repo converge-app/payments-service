@@ -29,6 +29,10 @@ namespace Application.Controllers
 
                 switch (stripeEvent.Type)
                 {
+                    case "payment_intent.created":
+                        intent = (PaymentIntent) stripeEvent.Data.Object;
+                        logger.LogInformation("Created: {ID}", intent.Id);
+                        break;
                     case "payment_intent.succeeded":
                         intent = (PaymentIntent) stripeEvent.Data.Object;
                         logger.LogInformation("Succeeded: {ID}", intent.Id);
