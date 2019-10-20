@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
+using Stripe;
 
 namespace Application.Controllers
 {
@@ -34,15 +35,29 @@ namespace Application.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> OpenPayment([FromBody] PaymentCreationDto paymentDto)
+        [HttpPost("deposit")]
+        [AllowAnonymous]
+        public async Task<IActionResult> StartDeposit([FromBody] DepositCreationDto depositCreationDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new { message = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
 
             try
             {
-                return Ok(null);
+                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+
+                var service = new PaymentIntentService();
+                var options = new PaymentIntentCreateOptions
+                {
+                    Amount = depositCreationDto.Amount,
+                    Currency = "usd",
+                };
+                var intent = service.Create(options);
+
+                return Ok(new PaymentIntentCreatedDto
+                {
+                    ClientSecret = intent.ClientSecret
+                });
             }
             catch (Exception e)
             {
