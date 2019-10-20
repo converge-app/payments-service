@@ -9,7 +9,7 @@ namespace Application.Controllers
     [ApiController]
     public class WebhookController : Controller
     {
-        const string secret = "sk_test_dEYerF4aiezK453envsRBmWZ";
+        const string secret = "whsec_wx5T4KMQt2SVbEytgs2GecG7zXT0Tp2z";
         private readonly ILogger<WebhookController> logger;
 
         public WebhookController(ILogger<WebhookController> logger)
