@@ -45,7 +45,7 @@ namespace Application.Controllers
             }
             catch (StripeException e)
             {
-                return BadRequest()
+                return BadRequest();
             }
         }
     }
