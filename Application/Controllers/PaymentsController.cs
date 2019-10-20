@@ -51,6 +51,10 @@ namespace Application.Controllers
                 {
                     Amount = depositCreationDto.Amount,
                     Currency = "usd",
+                    PaymentMethodTypes = new List<string>
+                    {
+                    "card"
+                    }
                 };
                 var intent = service.Create(options);
 
