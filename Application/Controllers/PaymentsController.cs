@@ -3,20 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Application.Exceptions;
-using Application.Helpers;
 using Application.Models.DataTransferObjects;
-using Application.Models.Entities;
 using Application.Repositories;
 using Application.Services;
-using Application.Utility;
-using Application.Utility.Exception;
 using Application.Utility.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using Stripe;
 
 namespace Application.Controllers
