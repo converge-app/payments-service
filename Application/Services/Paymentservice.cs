@@ -15,11 +15,7 @@ using Newtonsoft.Json;
 
 namespace Application.Services
 {
-    public interface IPaymentservice
-    {
-        Task<Payment> Open(Payment payment);
-        Task<bool> Accept(Payment payment, string authorizationToken);
-    }
+    public interface IPaymentservice { }
 
     public class Paymentservice : IPaymentservice
     {
@@ -30,27 +26,6 @@ namespace Application.Services
         {
             _paymentRepository = paymentRepository;
             _client = client;
-        }
-
-        public async Task<Payment> Open(Payment payment)
-        {
-            var project = await _client.GetProjectAsync(payment.ProjectId);
-            if (project == null) throw new InvalidPayment();
-
-            var createdPayment = await _paymentRepository.Create(payment);
-
-            return createdPayment ??
-                throw new InvalidPayment();
-        }
-
-        public async Task<bool> Accept(Payment payment, string authorizationToken)
-        {
-            var project = await _client.GetProjectAsync(payment.ProjectId);
-            if (project == null) throw new InvalidPayment("projectId invalid");
-
-            project.FreelancerId = payment.FreelancerId;
-
-            return await _client.UpdateProjectAsync(authorizationToken, project);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.IO;
+using Application.Utility.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stripe;
@@ -49,7 +50,7 @@ namespace Application.Controllers
             }
             catch (StripeException e)
             {
-                return BadRequest();
+                return BadRequest(new MessageObj(e.Message));
             }
         }
     }

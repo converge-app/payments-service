@@ -62,5 +62,41 @@ namespace Application.Controllers
                 return BadRequest(new MessageObj(e.Message));
             }
         }
+
+        [HttpPost("withdraw")]
+        public async Task<IActionResult> StartWithdraw([FromBody] WithdrawCreationDto withdrawCreationDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+
+            try
+            {
+                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+
+                // Check if account has the required amount of money
+
+                var service = new PayoutService();
+                var options = new PayoutCreateOptions
+                {
+                    Amount = withdrawCreationDto.Amount,
+                    Destination = withdrawCreationDto.CardToken,
+                    Currency = "usd",
+                    Method = "standard",
+                    SourceType = Stripe.SourceType.Card,
+                    Metadata = new Dictionary<string, string>() { { "UserId", User.FindFirstValue(ClaimTypes.Name) } }
+                };
+                var payout = service.Create(options);
+
+                return Ok(new PayoutCreatedDto
+                {
+                    PayoutId = payout.Id
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new MessageObj(e.Message));
+            }
+        }
+
     }
 }

@@ -8,10 +8,10 @@ namespace Application.Helpers
     {
         public AutoMapperProfile()
         {
-            CreateMap<Payment, PaymentDto>();
-            CreateMap<PaymentDto, Payment>();
-            CreateMap<PaymentUpdateDto, Payment>();
-            CreateMap<PaymentCreationDto, Payment>();
+            CreateMap<Transaction, PaymentDto>();
+            CreateMap<PaymentDto, Transaction>();
+            CreateMap<PaymentUpdateDto, Transaction>();
+            CreateMap<PaymentCreationDto, Transaction>();
         }
     }
 }
