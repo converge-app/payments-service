@@ -69,6 +69,7 @@ namespace Application
             var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
             services.AddTokenValidation(appSettings.Secret);
             services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IAccountsRepository, AccountsRepository>();
             services.AddScoped<IPaymentservice, Paymentservice>();
 
             services.AddApiDocumentation("Payments");

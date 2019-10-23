@@ -22,10 +22,10 @@ namespace Application.Controllers
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPaymentservice _paymentservice;
 
-        public PaymentsController(IPaymentservice paymentservice, IPaymentRepository paymentRepository, IMapper mapper)
+        public PaymentsController(IPaymentservice paymentservice, IPaymentRepository paymentsRepository, IMapper mapper)
         {
             _paymentservice = paymentservice;
-            _paymentRepository = paymentRepository;
+            _paymentRepository = paymentsRepository;
             _mapper = mapper;
         }
 
@@ -81,8 +81,6 @@ namespace Application.Controllers
                     Amount = withdrawCreationDto.Amount,
                     Destination = withdrawCreationDto.CardToken,
                     Currency = "usd",
-                    Method = "standard",
-                    SourceType = Stripe.SourceType.Card,
                     Metadata = new Dictionary<string, string>() { { "UserId", User.FindFirstValue(ClaimTypes.Name) } }
                 };
                 var payout = service.Create(options);

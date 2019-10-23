@@ -12,6 +12,7 @@ namespace Application.Helpers
             CreateMap<PaymentDto, Transaction>();
             CreateMap<PaymentUpdateDto, Transaction>();
             CreateMap<PaymentCreationDto, Transaction>();
+            CreateMap<Account, CreatedAccountDto>();
         }
     }
 }

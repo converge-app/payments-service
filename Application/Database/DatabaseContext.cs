@@ -8,6 +8,7 @@ namespace Application.Database
     public interface IDatabaseContext
     {
         IMongoCollection<Transaction> Payments { get; }
+        IMongoCollection<Account> Accounts { get; }
 
         bool IsConnectionOpen();
     }
@@ -24,6 +25,7 @@ namespace Application.Database
         }
 
         public IMongoCollection<Transaction> Payments => _database.GetCollection<Transaction>("Payments");
+        public IMongoCollection<Account> Accounts => _database.GetCollection<Account>("Accounts");
 
         public bool IsConnectionOpen()
         {
