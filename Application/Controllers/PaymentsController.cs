@@ -19,14 +19,19 @@ namespace Application.Controllers
     public class PaymentsController : ControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly IAccountsRepository _accountsRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPaymentservice _paymentservice;
 
-        public PaymentsController(IPaymentservice paymentservice, IPaymentRepository paymentsRepository, IMapper mapper)
+        public PaymentsController(IPaymentservice paymentservice,
+            IPaymentRepository paymentsRepository,
+            IMapper mapper,
+            IAccountsRepository accountsRepository)
         {
             _paymentservice = paymentservice;
             _paymentRepository = paymentsRepository;
             _mapper = mapper;
+            _accountsRepository = accountsRepository;
         }
 
         [HttpPost("deposit")]
@@ -38,6 +43,7 @@ namespace Application.Controllers
             try
             {
                 StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                var transferGroup = Guid.NewGuid().ToString();
 
                 var service = new PaymentIntentService();
                 var options = new PaymentIntentCreateOptions
@@ -48,9 +54,14 @@ namespace Application.Controllers
                     {
                     "card"
                     },
-                    Metadata = new Dictionary<string, string>() { { "UserId", User.FindFirstValue(ClaimTypes.Name) } }
+                    Metadata = new Dictionary<string, string>()
+                    { { "UserId", User.FindFirstValue(ClaimTypes.Name) }, { "TransferGroup", transferGroup }
+                    },
+                    TransferGroup = transferGroup
                 };
                 var intent = service.Create(options);
+
+                ;
 
                 return Ok(new PaymentIntentCreatedDto
                 {
