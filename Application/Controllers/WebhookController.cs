@@ -19,7 +19,7 @@ namespace Application.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post()
+        public async System.Threading.Tasks.Task<IActionResult> PostAsync()
         {
             try
             {
@@ -37,6 +37,17 @@ namespace Application.Controllers
                     case "payment_intent.succeeded":
                         intent = (PaymentIntent) stripeEvent.Data.Object;
                         logger.LogInformation("Succeeded: {ID}", intent.Id);
+
+                        StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                        var options = new TransferCreateOptions()
+                        {
+                            Amount = intent.Amount,
+                            Currency = intent.Currency,
+                            Destination = stripeEvent.Account
+                        };
+                        var service = new TransferService();
+                        Transfer transfer = await service.CreateAsync(options);
+
                         break;
                     case "payment_intent.failed":
                         intent = (PaymentIntent) stripeEvent.Data.Object;

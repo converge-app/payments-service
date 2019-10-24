@@ -13,18 +13,14 @@ namespace Application.Exceptions
         //    http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dncscol/html/csharp07192001.asp
         //
 
-        public InvalidPayment()
-        { }
+        public InvalidPayment() { }
 
-        public InvalidPayment(string message) : base(message)
-        { }
+        public InvalidPayment(string message) : base(message) { }
 
-        public InvalidPayment(string message, Exception inner) : base(message, inner)
-        { }
+        public InvalidPayment(string message, Exception inner) : base(message, inner) { }
 
         protected InvalidPayment(
             SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        { }
+            StreamingContext context) : base(info, context) { }
     }
 }

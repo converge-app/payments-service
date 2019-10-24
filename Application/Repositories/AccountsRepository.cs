@@ -14,6 +14,7 @@ namespace Application.Repositories
         Task Update(string id, Account accountIn);
         Task Remove(Account accountIn);
         Task Remove(string id);
+        Task<Account> GetByUserId(string userId);
     }
 
     public class AccountsRepository : IAccountsRepository
@@ -55,6 +56,11 @@ namespace Application.Repositories
         public async Task Remove(string id)
         {
             await _accounts.DeleteOneAsync(account => account.Id == id);
+        }
+
+        public async Task<Account> GetByUserId(string userId)
+        {
+            return await (await _accounts.FindAsync(account => account.UserId == userId)).FirstOrDefaultAsync();
         }
     }
 }

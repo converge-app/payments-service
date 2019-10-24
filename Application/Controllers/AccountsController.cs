@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Exceptions;
 using Application.Models.DataTransferObjects;
 using Application.Repositories;
 using Application.Services;
@@ -70,8 +71,7 @@ namespace Application.Controllers
                     return Ok(response.StripeUserId);
                 }
 
-                var deleteService = new AccountService();
-                deleteService.Delete(response.StripeUserId)
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -79,5 +79,15 @@ namespace Application.Controllers
                 return BadRequest(new MessageObj(ex.Message));
             }
         }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetAccountByUserId([FromRoute] string userId)
+        {
+
+            var account = await _accountsRepository.GetByUserId(userId);
+            var accountDto = _mapper.Map<AccountDto>(account);
+            return Ok(accountDto);
+        }
+
     }
 }
