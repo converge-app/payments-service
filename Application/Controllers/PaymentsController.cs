@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Application.Exceptions;
 using Application.Models.DataTransferObjects;
 using Application.Repositories;
 using Application.Services;
@@ -55,9 +56,12 @@ namespace Application.Controllers
                     "card"
                     },
                     Metadata = new Dictionary<string, string>()
-                    { { "UserId", User.FindFirstValue(ClaimTypes.Name) }, { "TransferGroup", transferGroup }
+                    { { "UserId", User.FindFirstValue(ClaimTypes.Name) }
                     },
-                    TransferGroup = transferGroup
+                    TransferData = new PaymentIntentTransferDataOptions
+                    {
+                    Destination = (await _accountsRepository.GetByUserId(User.FindFirstValue(ClaimTypes.Name))).StripeUserId
+                    }
                 };
                 var intent = service.Create(options);
 
@@ -83,23 +87,63 @@ namespace Application.Controllers
             try
             {
                 StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
-
-                // Check if account has the required amount of money
+                var user = await _accountsRepository.GetByUserId(withdrawCreationDto.UserId);
 
                 var service = new PayoutService();
                 var options = new PayoutCreateOptions
                 {
                     Amount = withdrawCreationDto.Amount,
-                    Destination = withdrawCreationDto.CardToken,
                     Currency = "usd",
-                    Metadata = new Dictionary<string, string>() { { "UserId", User.FindFirstValue(ClaimTypes.Name) } }
+                    Metadata = new Dictionary<string, string>() { { "UserId", User.FindFirstValue(ClaimTypes.Name) } },
                 };
-                var payout = service.Create(options);
+                var payout = service.Create(options, new RequestOptions { StripeAccount = user.StripeUserId });
 
                 return Ok(new PayoutCreatedDto
                 {
                     PayoutId = payout.Id
                 });
+                throw new InvalidPayment("Couldn't process withdraw");
+
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new MessageObj(e.Message));
+            }
+        }
+
+        [HttpGet("balance/user/{userId}")]
+        public async Task<IActionResult> GetBalance([FromRoute] string userId)
+        {
+            try
+            {
+                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                var user = await _accountsRepository.GetByUserId(userId);
+
+                var service = new BalanceService();
+                Balance balance = await service.GetAsync(new RequestOptions { StripeAccount = user.StripeUserId });
+                return Ok(balance);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new MessageObj(e.Message));
+            }
+        }
+
+        [HttpGet("transactions/user/{userId}")]
+        public async Task<IActionResult> GetBalanceHistory([FromRoute] string userId)
+        {
+            try
+            {
+                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                var user = await _accountsRepository.GetByUserId(userId);
+
+                var service = new BalanceTransactionService();
+                List<BalanceTransaction> transactions = (await service.ListAsync(new BalanceTransactionListOptions
+                    {
+
+                    },
+                    new RequestOptions { StripeAccount = user.StripeUserId })).ToList();
+                return Ok(transactions);
             }
             catch (Exception e)
             {

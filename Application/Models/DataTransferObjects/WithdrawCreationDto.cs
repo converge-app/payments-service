@@ -7,6 +7,5 @@ namespace Application.Models.DataTransferObjects
     [Required]
     public string UserId { get; set; }
     public long Amount { get; set; }
-    public string CardToken { get; set; }
   }
 }

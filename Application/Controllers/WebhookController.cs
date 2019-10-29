@@ -42,18 +42,6 @@ namespace Application.Controllers
                     case "payment_intent.succeeded":
                         intent = (PaymentIntent) stripeEvent.Data.Object;
                         _logger.LogInformation("Succeeded: {ID}", intent.Id);
-
-                        var account = await _accountsRepository.GetByUserId(intent.Metadata["UserId"]);
-
-                        var transferService = new TransferService();
-                        var transferOptions = new TransferCreateOptions
-                        {
-                            Amount = intent.Amount,
-                            Currency = "usd",
-                            Destination = account.StripeUserId,
-                            TransferGroup = intent.Metadata["TransferGroup"]
-                        };
-                        transferService.Create(transferOptions);
                         break;
                     case "payment_intent.failed":
                         intent = (PaymentIntent) stripeEvent.Data.Object;
