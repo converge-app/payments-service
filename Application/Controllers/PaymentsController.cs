@@ -19,6 +19,7 @@ namespace Application.Controllers
     [Authorize]
     public class PaymentsController : ControllerBase
     {
+        private const string ServiceKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
         private readonly IMapper _mapper;
         private readonly IAccountsRepository _accountsRepository;
         private readonly IPaymentRepository _paymentRepository;
@@ -43,7 +44,7 @@ namespace Application.Controllers
 
             try
             {
-                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                StripeConfiguration.ApiKey = ServiceKey;
                 var transferGroup = Guid.NewGuid().ToString();
 
                 var service = new PaymentIntentService();
@@ -86,7 +87,7 @@ namespace Application.Controllers
 
             try
             {
-                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                StripeConfiguration.ApiKey = ServiceKey;
                 var user = await _accountsRepository.GetByUserId(withdrawCreationDto.UserId);
 
                 var service = new PayoutService();
@@ -116,7 +117,7 @@ namespace Application.Controllers
         {
             try
             {
-                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                StripeConfiguration.ApiKey = ServiceKey;
                 var user = await _accountsRepository.GetByUserId(userId);
 
                 var service = new BalanceService();
@@ -134,7 +135,7 @@ namespace Application.Controllers
         {
             try
             {
-                StripeConfiguration.ApiKey = "sk_test_dEYerF4aiezK453envsRBmWZ";
+                StripeConfiguration.ApiKey = ServiceKey;
                 var user = await _accountsRepository.GetByUserId(userId);
 
                 var service = new BalanceTransactionService();
@@ -151,5 +152,35 @@ namespace Application.Controllers
             }
         }
 
+        public async Task<IActionResult> Transfer([FromBody] TransferCreationDto transferCreationDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+
+            try
+            {
+                StripeConfiguration.ApiKey = ServiceKey;
+
+                // The sender is usually the employer and the freelancer the receiver. 
+                //This is just to expose a generic interface
+                var senderAccount = await _accountsRepository.GetByUserId(transferCreationDto.SenderId);
+                var receiverAccount = await _accountsRepository.GetByUserId(transferCreationDto.ReceiverId);
+
+                var service = new TransferService();
+                var options = new TransferCreateOptions
+                {
+                    Amount = transferCreationDto.Amount,
+                    Currency = "usd",
+                    Destination = receiverAccount.StripeUserId
+                };
+                var transfer = service.Create(options, new RequestOptions { StripeAccount = senderAccount.StripeUserId });
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new MessageObj(e.Message));
+            }
+        }
     }
 }
