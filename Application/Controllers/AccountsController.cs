@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Application.Exceptions;
 using Application.Models.DataTransferObjects;
@@ -43,6 +44,11 @@ namespace Application.Controllers
 
             try
             {
+                if ((await _accountsRepository.GetByUserId(User.FindFirstValue(ClaimTypes.Name))) != null)
+                {
+                    throw new InvalidStripeUser("Account already exists");
+                }
+
                 var options = new OAuthTokenCreateOptions
                 {
                     GrantType = "authorization_code",
